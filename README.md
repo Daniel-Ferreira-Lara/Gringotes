@@ -16,5 +16,56 @@ Nesse contexto, propomos o desenvolvimento de uma solução para atendimento ban
 - biblioteca transformers : biblioteca proviniente da Pytorch é resposável pela integração do modelo com o nosso classificador.
 - SQL: o Langchain oferece suporte para consultas SQL inteligentes no qual usamos para gerenciar os dados do banco, além disso com ela podemos definir o que vai ou não vai passar pelos servidores da OpenAI.
 - Streamlit: é uma ferramenta prática para desenvolvimento rápido de interfaces voltadas para chatbots.
+  
+## Installação
 
-## Testando
+#### 1. Clone the repository
+
+```bash
+git clone https://github.com/iRyanRib/Gringotes.git
+```
+
+#### 2. Criando ambiente Python
+
+Python 3.10 ou acima usando `venv` :
+
+``` bash
+cd Gringotes
+python3 -m venv env
+source env/bin/activate
+```
+#### 3. Intallando as dependências
+``` bash
+pip install -r requirements.txt
+```
+
+#### 4. Set up the keys in a .env file
+
+Crie `.env` no diretório principal do projeto. Dentro do arquivo, adcione sua OpenAI API key:
+
+```makefile
+OPENAI_API_KEY="your_api_key_here"
+```
+###5. configurando arquivo JSON google cloud
+Vá para google cloud console :https://console.cloud.google.com/
+selecione seu projeto, vá para:
+"APIs & Services" > "Credentials".
+clique em  "Create credentials" e selecione "Service Account Key".
+preencha as informações necessárias e crie a chave no formato JSON.
+
+tenha certeza que ela contém os campos necessários:
+type, project_id, private_key_id, private_key, client_email, client_id, auth_uri, token_uri, auth_provider_x509_cert_url, client_x509_cert_url.
+
+Em seu código, verifique se você está fornecendo o caminho correto para o arquivo de chave JSON.  O caminho deve ser absoluto ou relativo ao local do script.  Verifique novamente o caminho para se certificar de que é preciso.
+por exemplo:
+```python
+#iniciando o  Google Cloud Translation API client
+client = translate.Client.from_service_account_json('quick-discovery-395419-3351469312d3.json')
+```
+Depois de confirmar que seu arquivo de chave JSON tem os campos obrigatórios e o caminho está correto, tente executar o código novamente usando a chave JSON válida.
+
+salve e feche o arquivo. No seu terminal rode o código principal:
+```python
+python3 Alice.py
+```
+obs: Alice no momento desse lançamento está habilitada para atender as solicitações de problemas envolvendo "chegada de cartão", ou seja, "quando meu cartão chega", "meu cartão ainda não veio", "a entrega do meu cartão está atrasada". Planejamos em trabalhos futuros cobrir as 77 classes disponíveis no banco.
