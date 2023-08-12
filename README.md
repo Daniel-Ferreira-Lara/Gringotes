@@ -46,7 +46,7 @@ Crie `.env` no diretório principal do projeto. Dentro do arquivo, adcione sua O
 ```makefile
 OPENAI_API_KEY="your_api_key_here"
 ```
-###5. configurando arquivo JSON google cloud
+### 5. configurando arquivo JSON google cloud
 Vá para google cloud console :https://console.cloud.google.com/
 selecione seu projeto, vá para:
 "APIs & Services" > "Credentials".
@@ -64,7 +64,8 @@ client = translate.Client.from_service_account_json('quick-discovery-395419-3351
 ```
 Depois de confirmar que seu arquivo de chave JSON tem os campos obrigatórios e o caminho está correto, tente executar o código novamente usando a chave JSON válida.
 
-salve e feche o arquivo. No seu terminal rode o código principal:
+## Rodando
+No seu terminal rode o código principal:
 ```python
 python3 Alice.py
 ```
