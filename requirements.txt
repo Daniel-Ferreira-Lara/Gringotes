@@ -1,0 +1,14 @@
+torch
+langchain
+pydantic
+transformers
+google-cloud
+google-cloud-translate
+langchain-experimental
+openai
+xformers
+requests
+streamlit
+streamlit-lottie
+toml
+json
