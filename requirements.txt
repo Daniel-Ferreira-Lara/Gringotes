@@ -12,3 +12,4 @@ streamlit
 streamlit-lottie
 toml
 json
+pip=23.2.1
