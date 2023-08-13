@@ -92,7 +92,7 @@ def integrate(alice, chat, prompt:str):
         alice_output = alice.exit(prompt)
         if alice_output != "CONTINUAR":
             stsst.estado = "fim"
-            integrate(chat,"")
+            integrate(alice,chat,"")
             return ""
     
     match stsst.estado:
@@ -126,7 +126,7 @@ def integrate(alice, chat, prompt:str):
                 else:
                     stsst.estado = "other"
                 stsst.var = -1
-                integrate(chat,"")
+                integrate(alice,chat,"")
                 return ""
             
         case "repeat":
@@ -135,12 +135,12 @@ def integrate(alice, chat, prompt:str):
                 if alice_output == "CONTINUAR":
                     stsst.estado = "apresentação"
                     stsst.var = 1
-                    integrate(chat,"")
+                    integrate(alice,chat,"")
                     return ""
                 else:
                     stsst.estado = "fim"
                     
-                integrate(chat,"")
+                integrate(alice,chat,"")
                 return ""
             else:
                 orientacao = estagios_geral[stsst.estado]
@@ -163,12 +163,12 @@ def integrate(alice, chat, prompt:str):
                 alice.alice_step(alice_output)
                 if stsst.var == 2:
                     chat.escreve_resposta(alice_output)
-                    integrate(chat,"")
+                    integrate(alice,chat,"")
                 elif stsst.var == 3:
                     alice_output = alice_output.replace("[CÓDIGO DE RASTREIO]", alice.codRast)
                     chat.escreve_resposta(alice_output)
                     stsst.estado = "fim"
-                    integrate(chat,"")
+                    integrate(alice,chat,"")
                 else:
                     chat.escreve_resposta(alice_output)
                 return ""
@@ -179,7 +179,7 @@ def integrate(alice, chat, prompt:str):
             alice.alice_step(alice_output)
             chat.escreve_resposta(alice_output)
             stsst.estado = "repeat" 
-            integrate(chat,"")
+            integrate(alice,chat,"")
             return ""
         
         case "fim":
