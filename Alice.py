@@ -1,10 +1,5 @@
 #langchain bibliotecas
-from langchain.llms import OpenAI
-from langchain.utilities import SQLDatabase
-from langchain_experimental.sql import SQLDatabaseChain
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 
 from langchain.prompts.chat import (
@@ -12,8 +7,6 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-#biblioteca transformers do Pytorch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 from re import sub
 from typing import Dict, List
@@ -100,6 +93,7 @@ def extract_cpf(input_string):
         return clean_string
     else:
         return None
+    
 #após verficação inicial de contexto é feita a classificação da demanda do usuário
 def analyzer(user_input):
     global var
@@ -111,19 +105,23 @@ def analyzer(user_input):
         if score >= 0.78:
             return label
         else:
-            var = 1984
+            var = 1
+            stsst.var = var
+            return None
     else:
-        var = 1984  
+        var = 1
+        stsst.var = var
+        return None 
 
 #classe principal do atendimento
 class Alice_service:
     def __init__(self):
-        self._orientacao = "" # Atributo protegido
-        self._history: List[str] = [] # Atributo protegido
-        self._user_input = ""
-        self._alice_output = ""
-        self.contaUsuario = None  # Initialize contaUsuario as an attribute to be used 
-        self.codRast = ""
+        self._orientacao = stsst.orientacao # Atributo protegido
+        self._history: List[str] = stsst.history # Atributo protegido
+        self._user_input = stsst.user_input
+        self._alice_output = stsst.alice_output
+        self.contaUsuario = stsst.contaUsuario  # Initialize contaUsuario as an attribute to be used 
+        self.codRast = stsst.codRast
 
     #get e set dos atributos
     @property
@@ -133,6 +131,7 @@ class Alice_service:
     @alice_output.setter
     def alice_output(self,alice_output):
         self._alice_output = alice_output
+        stsst.alice_output = alice_output
         
     @property
     def orientacao(self):
@@ -141,6 +140,7 @@ class Alice_service:
     @orientacao.setter
     def orientacao(self,nova_orientacao):
         self._orientacao = nova_orientacao
+        stsst.orientacao = nova_orientacao
         
     @property
     def history(self):
@@ -149,12 +149,15 @@ class Alice_service:
     @history.setter
     def history(self,novo_history):
         self._history = novo_history
+        stsst.history = novo_history
         
     # Função para buscar frases semelhantes no banco de dados
     def atendimento(self,user_input,orientacao):
         
         self._user_input = user_input
         self._orientacao = orientacao
+        stsst.user_input = user_input
+        stsst.orientacao = orientacao
         #pré análise do input do usuário
         chat = load_model_gpt(0.15)
 
@@ -181,28 +184,33 @@ class Alice_service:
         chain = LLMChain(llm=chat, prompt=chat_prompt)
 
         response = chain.run(input=user_input,historico = self.history,orientacao=self.orientacao)
+        stsst.alice_output = response
         response = response.replace("\n", "")
         return response
+    
     #guarda input do usuário no histórico
     def human_step(self,human_input):
         human_input = human_input + '<FIM_TURNO_CLIENTE>'
         self.history.append(human_input)
-
-    #verifica se o usuário quer sair do atendimento      
-    def exit(self,user_input):
-        orientacao = " verifique através da fala {input} se o usuário quer sair do atendimento, se sim retorne apenas sim se não retone apenas não"
-        alice_output = self.atendimento(user_input,orientacao)
-        if alice_output =="sim":
-            orientacao = " dispeça e diga que o Banco Gringottes agradece pelo contato. Não diga mais nada além disso!"
-            alice_output = self.atendimento(user_input,orientacao)
-            print("\n alice turn =>",alice_output)
-            sys.exit()
+        stsst.history.append(human_input)
 
     #guarda output da alice no histórico       
     def alice_step(self,alice_output):
             # process human input
             alice_output = alice_output + '<FIM_TURNO_ATENDENTE>'
             self.history.append(alice_output)
+            stsst.history.append(alice_output)
+
+    #verifica se o usuário quer sair do atendimento      
+    def exit(self,user_input):
+        orientacao = "Verifique através da fala {input} se o usuário deseja sair do atendimento, se sim retorne apenas a palavra SIM se não retone apenas a palavra NÃO"
+        alice_output = self.atendimento(user_input,orientacao)
+        if alice_output =="SIM":
+            orientacao = " dispeça e diga que o Banco Gringottes agradece pelo contato. Não diga mais nada além disso!"
+            alice_output = self.atendimento(user_input,orientacao)
+            return alice_output
+        else:
+            return "CONTINUAR"  
     
     #função para o script de chegada de cartão
     def select_card_arrival(self,user_input,var):
@@ -222,6 +230,7 @@ class Alice_service:
                 resposta = db_chain.run(pergunta)
                 if resposta == "sim":
                     self.contaUsuario = user_input #salva a conta do usuario para usos futuros
+                    stsst.contaUsuario = user_input
                     orientacao = estagio_conversa_dict["1"]
                     var = var + 1
                     return orientacao,var
