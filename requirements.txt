@@ -13,3 +13,4 @@ streamlit-lottie
 toml
 json
 pip=23.2.1
+conda=23.7.2
