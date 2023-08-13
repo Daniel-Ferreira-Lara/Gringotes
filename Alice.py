@@ -31,28 +31,29 @@ import sys
 # Carregando o env
 load_dotenv(find_dotenv())
 
-#Arquivo da Interface Gráfica
-from Streamlit_UI import *
+
+#Arquivo de integração
+from Integration import *
 
 #carregando o modelo e criando o classificador
 embeddings = OpenAIEmbeddings()
-model_id = 'philschmid/BERT-Banking77'
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-model = AutoModelForSequenceClassification.from_pretrained(model_id)
-classifier = pipeline('text-classification', tokenizer=tokenizer, model=model)
+classifier = load_model_bank()
+
 
 #carregando recursos SQL
-db = SQLDatabase.from_uri("sqlite:///Bank.db")
-llm = OpenAI(temperature=0)
-db_chain = SQLDatabaseChain.from_llm(llm, db)
-db_chainDirect = SQLDatabaseChain.from_llm(llm, db, return_direct=True) #Retorna a query sem passar pelo LLM
+db_chain, db_chainDirect = load_bd() 
 
 #iniciando o  Google Cloud Translation API client
-client = translate.Client.from_service_account_json('quick-discovery-395419-3351469312d3.json')
+client = load_model_translate()
 
 # Função para traduzir o texto para português
 def translate_portuguese_to_english(text):
     translated = client.translate(text, target_language='en', source_language='pt-BR')
+    translated['translatedText'] = translated['translatedText'].replace("&#39;", "'")
+    return translated['translatedText']
+
+def translate_english_to_portuguese(text):
+    translated = client.translate(text, target_language='pt-BR', source_language='en')
     translated['translatedText'] = translated['translatedText'].replace("&#39;", "'")
     return translated['translatedText']
 
@@ -65,7 +66,7 @@ def match(user_input_t):
 
 # Função para verificar se o contexto bancário está presente na frase
 def verify_context(user_input):
-    chat = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.15)
+    chat = load_model_gpt(0.15)
 
     # Template to use for the system message prompt
     template =  """
@@ -155,7 +156,7 @@ class Alice_service:
         self._user_input = user_input
         self._orientacao = orientacao
         #pré análise do input do usuário
-        chat = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.15)
+        chat = load_model_gpt(0.15)
 
         # Template to use for the system message prompt
         template =  """

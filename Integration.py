@@ -7,7 +7,8 @@ from langchain_experimental.sql import SQLDatabaseChain
 from langchain.chat_models import ChatOpenAI
 #biblioteca transformers do Pytorch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-
+#biblioteca de tradução do google cloud
+from google.cloud import translate_v2 as translate
 
 #Funções para manter recursos e dados a aplicação em cache
 @st.cache_resource(show_spinner=False)
@@ -19,8 +20,8 @@ def load_model_bank():
     return classifier
 
 @st.cache_resource(show_spinner=False)
-def load_model_gpt():
-    return ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.2)
+def load_model_gpt(temperature):
+    return ChatOpenAI(model_name="gpt-3.5-turbo", temperature=temperature)
 
 @st.cache_resource(show_spinner=False)
 def load_bd():
@@ -32,9 +33,9 @@ def load_bd():
 
 
 # Convertendo secrets do deploy na Key do google Cloud API
-from google.cloud import translate_v2 as translate
+
 @st.cache_resource(show_spinner=False)
-def googleSecret():
+def load_model_translate():
     json_data = {
     "type": st.secrets.google.type,
     "project_id": st.secrets.google.project_id,
