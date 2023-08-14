@@ -1,4 +1,5 @@
 import streamlit as st
+stsst = st.session_state
 #langchain bibliotecas
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chains import LLMChain
