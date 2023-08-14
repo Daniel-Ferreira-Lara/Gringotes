@@ -13,7 +13,7 @@ from typing import Dict, List
 
 
 #biblioteca para carregar arquivo .env
-from dotenv import find_dotenv, load_dotenv
+#from dotenv import find_dotenv, load_dotenv
 
 #biblioteca para tradução 
 from google.cloud import translate_v2 as translate
