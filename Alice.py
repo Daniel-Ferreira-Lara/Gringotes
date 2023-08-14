@@ -26,7 +26,8 @@ import sys
 
 
 #Arquivo de integração
-from Integration import *
+from Integration import load_model_bank, load_model_gpt, load_bd, load_model_translate
+from Integration import integrate
 
 #carregando o modelo e criando o classificador
 embeddings = OpenAIEmbeddings()
