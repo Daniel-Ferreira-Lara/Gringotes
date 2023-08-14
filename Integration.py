@@ -1,14 +1,5 @@
 import streamlit as st
 stsst = st.session_state
-#langchain bibliotecas
-from langchain.llms import OpenAI
-from langchain.utilities import SQLDatabase
-from langchain_experimental.sql import SQLDatabaseChain
-from langchain.chat_models import ChatOpenAI
-#biblioteca transformers do Pytorch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-#biblioteca de tradução do google cloud
-from google.cloud import translate_v2 as translate
 
 from Alice import translate_english_to_portuguese, analyzer
 
