@@ -22,7 +22,7 @@ from google.cloud import translate_v2 as translate
 import sys
 
 # Carregando o env
-load_dotenv(find_dotenv())
+#load_dotenv(find_dotenv())
 
 
 #Arquivo de integração
