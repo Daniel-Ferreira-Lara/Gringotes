@@ -51,7 +51,7 @@ class Chat:
                     message_placeholder.markdown(respota + "▌")
                 message_placeholder.markdown(respota)
 
-    def conversa(self):
+    def conversa(self,alice):
         with self.chat:
             for msg in stsst.mensagens:
                 imagem = self.img_usuario if(msg["papel"] == "usuario") else self.img_alice
@@ -60,5 +60,5 @@ class Chat:
         if prompt:= self.chat.chat_input("Sua mensagem ",max_chars=2000,disabled=stsst.disable):
             stsst.mensagens.append({"papel": "usuario", "conteudo": prompt})
             self.chat.chat_message("usuario",avatar=self.img_usuario).markdown(prompt)           
-            resposta_assistente = integrate(self,prompt)
+            resposta_assistente = integrate(alice,self,prompt)
             self.escreve_resposta(resposta_assistente)

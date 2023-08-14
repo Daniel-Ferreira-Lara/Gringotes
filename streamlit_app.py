@@ -9,7 +9,7 @@ def main():
     chat = Chat()
     alice = Alice_service()
 
-    chat.conversa()
+    chat.conversa(alice)
 
     #Verificação para Alice iniciar a conversação
     if  stsst.estado == "":
