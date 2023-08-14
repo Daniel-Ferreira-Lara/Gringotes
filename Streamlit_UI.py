@@ -3,7 +3,7 @@ from streamlit_lottie import st_lottie_spinner
 from Integration import *
 import requests
 import time
-
+from Alice import load_model_bank, load_model_gpt, load_bd, load_model_translate
 def load_backend():
     load_model_bank()
     load_model_gpt()
