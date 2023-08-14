@@ -12,22 +12,54 @@ from re import sub
 from typing import Dict, List
 
 
-#biblioteca para carregar arquivo .env
-#from dotenv import find_dotenv, load_dotenv
 
 #biblioteca para tradução 
 from google.cloud import translate_v2 as translate
 
-#biblioteca do sistema para encerrar o processo
-import sys
+#funções para cache
 
-# Carregando o env
-#load_dotenv(find_dotenv())
+#Funções para manter recursos e dados a aplicação em cache
+@st.cache_resource(show_spinner=False)
+def load_model_bank():
+    model_id = 'philschmid/BERT-Banking77'
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForSequenceClassification.from_pretrained(model_id)
+    classifier = pipeline('text-classification', tokenizer=tokenizer, model=model)
+    return classifier
+
+@st.cache_resource(show_spinner=False)
+def load_model_gpt(temperature):
+    return ChatOpenAI(model_name="gpt-3.5-turbo", temperature=temperature)
+
+@st.cache_resource(show_spinner=False)
+def load_bd():
+    db = SQLDatabase.from_uri("sqlite:///Database/Bank.db")
+    llm = OpenAI(temperature=0, verbose=True)
+    db_chain = SQLDatabaseChain.from_llm(llm, db, verbose=True)
+    db_chainDirect = SQLDatabaseChain.from_llm(llm, db, verbose=True, return_direct=True) #Returns the query without passing through the LLM
+    return db_chain, db_chainDirect
 
 
-#Arquivo de integração
-from Integration import load_model_bank, load_model_gpt, load_bd, load_model_translate
-from Integration import integrate
+# Convertendo secrets do deploy na Key do google Cloud API
+
+@st.cache_resource(show_spinner=False)
+def load_model_translate():
+    json_data = {
+    "type": st.secrets.google.type,
+    "project_id": st.secrets.google.project_id,
+    "private_key_id": st.secrets.google.private_key_id,
+    "private_key": st.secrets.google.private_key,
+    "client_email": st.secrets.google.client_email,
+    "client_id": st.secrets.google.client_id,
+    "auth_uri": st.secrets.google.auth_uri,
+    "token_uri": st.secrets.google.token_uri,
+    "auth_provider_x509_cert_url": st.secrets.google.auth_provider_x509_cert_url,
+    "client_x509_cert_url": st.secrets.google.client_x509_cert_url,
+    "universe_domain": st.secrets.google.universe_domain
+    }
+    return translate.Client.from_service_account_info(json_data)
+
+
 
 #carregando o modelo e criando o classificador
 embeddings = OpenAIEmbeddings()
