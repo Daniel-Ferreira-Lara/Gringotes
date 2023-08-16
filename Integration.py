@@ -118,7 +118,7 @@ def integrate(alice, chat, prompt:str):
                 elif stsst.var == 3:
                     alice_output = alice_output.replace("[CÓDIGO DE RASTREIO]", alice.codRast)
                     chat.escreve_resposta(alice_output)
-                    stsst.estado = "fim"
+                    stsst.estado = "repeat"
                     integrate(alice,chat,"")
                 else:
                     chat.escreve_resposta(alice_output)
